@@ -1,0 +1,83 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'spring-boot'
+apply plugin: 'org.flywaydb.flyway'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+jar {
+  baseName = 'spring-data-jpa-example'
+  version = '1.0.0-SNAPSHOT'
+}
+
+repositories {
+  mavenCentral()
+  maven { url 'https://repo.spring.io/snapshot' }
+  maven { url 'https://repo.spring.io/milestone' }
+}
+
+ext {
+  springFrameworkVersion = "4.3.3.RELEASE"
+  springBootVersion = "1.4.1.RELEASE"
+  myBatisVersion = "1.1.1"
+  mysqlConnectorVersion = "5.1.39"
+  hikariVersion = "2.5.1"
+  swaggerVersion = "2.5.0"
+  junitVersion = "4.12"
+}
+
+dependencyManagement {
+  imports {
+    mavenBom "org.springframework:spring-framework-bom:$springFrameworkVersion"
+  }
+}
+
+dependencies {
+  compile "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
+  compile "org.mybatis.spring.boot:mybatis-spring-boot-starter:$myBatisVersion"
+  compile "org.springframework:spring-tx:$springFrameworkVersion"
+  compile "mysql:mysql-connector-java:$mysqlConnectorVersion"
+  compile "com.zaxxer:HikariCP:$hikariVersion"
+  compile "io.springfox:springfox-swagger2:$swaggerVersion"
+  compile "io.springfox:springfox-swagger-ui:$swaggerVersion"
+
+  testCompile "junit:junit:$junitVersion"
+  testCompile "org.springframework:spring-test:$springFrameworkVersion"
+}
+
+test {
+  filter {
+    // Include all integration tests
+    includeTestsMatching "*IT"
+  }
+}
+
+flyway {
+  url = 'jdbc:mysql://127.0.0.1:13306'
+  user = 'root'
+  password = 'P@ssw0rd'
+  schemas = ['example']
+}
+
+buildscript {
+  ext {
+    springBootVersion = "1.4.1.RELEASE"
+    mysqlConnectorVersion = "6.0.4"
+    flywayVersion = "4.0.3"
+  }
+  repositories {
+    mavenCentral()
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+  dependencies {
+    classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
+    classpath "gradle.plugin.com.boxfuse.client:flyway-release:$flywayVersion"
+  }
+}
+
+task wrapper(type: Wrapper) {
+  gradleVersion = '3.1'
+}
